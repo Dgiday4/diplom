@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница - Мои собаки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Общий стиль */
+        body {
+            font-family: 'Roboto', sans-serif; /* Приятный шрифт */
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a8e6cf 0%, #3d9970 100%); /* Зелёный градиент */
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Навигационное меню */
+        nav {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            margin: 0 1rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #3d9970; /* Зелёный цвет */
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #3d9970;
+            color: white;
+        }
+
+        /* Основной контейнер */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #3d9970; /* Зелёный цвет */
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        /* Форма добавления собаки */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            color: #a8e6cf; /* Светло-зелёный */
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        input, select, textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #3d9970; /* Зелёный фокус */
+            outline: none;
+        }
+
+        textarea {
+            grid-column: span 2;
+            resize: vertical;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 0.75rem;
+            background-color: #3d9970; /* Зелёный */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #a8e6cf; /* Светло-зелёный */
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            textarea, button {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационное меню -->
+    <nav>
+        <ul>
+            <li><a href="#dogs">Мои собаки</a></li>
+            <li><a href="#profile">Мой профиль</a></li>
+            <li><a href="#add-dog">Добавить собаку</a></li>
+        </ul>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <h1>Добро пожаловать на сайт "Dog&Home"! 🐶</h1>
+
+        <!-- Секция с формой добавления собаки -->
+        <section class="form-section" id="add-dog">
+            <h2>Добавить новую собаку</h2>
+            <form action="/add-dog/" method="post" enctype="multipart/form-data">  <!-- Добавлен enctype для загрузки файлов -->
+                <label for="name">Кличка собаки:</label>
+                <input type="text" id="name" name="name" required placeholder="Введите кличку">
+
+                <label for="breed">Порода:</label>
+                <select id="breed" name="breed" required>
+                    <option value="">Выберите породу</option>
+                    <option value="labrador">Лабрадор</option>
+                    <option value="bulldog">Бульдог</option>
+                    <option value="poodle">Пудель</option>
+                    <option value="husky">Хаски</option>
+                    <option value="other">Другая</option>
+                </select>
+
+                <label for="age">Возраст (лет):</label>
+                <input type="number" id="age" name="age" min="0" required placeholder="Введите возраст">
+
+                <label for="color">Цвет шерсти:</label>
+                <input type="text" id="color" name="color" placeholder="Например, рыжий, черный">
+
+                <label for="photo">Фото собаки:</label>
+                <input type="file" id="photo" name="photo" accept="image/*" required>  <!-- Новое поле для фото -->
+
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" rows="4" placeholder="Расскажите о собаке, ее характере и т.д."></textarea>
+
+                <button type="submit">Добавить собаку</button>
+            </form>
+        </section>
+
+        <!-- Заглушки для других секций (можно расширить) -->
+        <section id="dogs">
+            <h2>Мои собаки</h2>
+            <p>Здесь будут отображаться ваши собаки. (Добавьте логику в Django для отображения списка.)</p>
+        </section>
+
+        <section id="profile">
+            <h2>Мой профиль</h2>
+            <p>Здесь будет информация о вашем профиле. (Добавьте логику в Django для профиля.)</p>
+        </section>
+    </div>
+</body>
+</html>
