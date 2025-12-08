@@ -192,53 +192,21 @@
     </style>
 </head>
 <body>
-    <!-- Навигационное меню -->
+
     <nav>
         <ul>
             <li><a href="#dogs">Мои собаки</a></li>
             <li><a href="#profile">Мой профиль</a></li>
-            <li><a href="#add-dog">Добавить собаку</a></li>
+            <li><a href="dog/add_dog">Добавить собаку</a></li>
         </ul>
     </nav>
 
-    <!-- Основной контент -->
+
     <div class="container">
         <h1>Добро пожаловать на сайт "Dog&Home"! 🐶</h1>
 
-        <!-- Секция с формой добавления собаки -->
-        <section class="form-section" id="add-dog">
-            <h2>Добавить новую собаку</h2>
-            <form action="/add-dog/" method="post" enctype="multipart/form-data">
-                <label for="name">Кличка собаки:</label>
-                <input type="text" id="name" name="name" required placeholder="Введите кличку">
 
-                <label for="breed">Порода:</label>
-                <select id="breed" name="breed" required>
-                    <option value="">Выберите породу</option>
-                    <option value="labrador">Лабрадор</option>
-                    <option value="bulldog">Бульдог</option>
-                    <option value="poodle">Пудель</option>
-                    <option value="husky">Хаски</option>
-                    <option value="other">Другая</option>
-                </select>
 
-                <label for="age">Возраст (лет):</label>
-                <input type="number" id="age" name="age" min="0" required placeholder="Введите возраст">
-
-                <label for="color">Цвет шерсти:</label>
-                <input type="text" id="color" name="color" placeholder="Например, рыжий, черный">
-
-                <label for="photo">Фото собаки:</label>
-                <input type="file" id="photo" name="photo" accept="image/*" required>  <!-- Новое поле для фото -->
-
-                <label for="description">Описание:</label>
-                <textarea id="description" name="description" rows="4" placeholder="Расскажите о собаке, ее характере и т.д."></textarea>
-
-                <button type="submit">Добавить собаку</button>
-            </form>
-        </section>
-
-        <!-- Секция "Мои собаки" с красивым оформлением -->
         <section class="dogs-section" id="dogs">
             <h2>Мои собаки</h2>
             <div class="dogs-grid">
