@@ -1,9 +1,960 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Dog&Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            --shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.2);
+            --border-radius: 25px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
 
-<h1>Логинимся на сайте</h1>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form method="post">
-    {% csrf_token %}
-{{ form.as_div }}
-    <button>Зарегистрироваться</button>
-</form>
-<a href="{% url 'registrathion' %}">Регистрация</a>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--secondary-color);
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(25px);
+            border-radius: var(--border-radius);
+            padding: 50px 40px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: var(--gradient-secondary);
+            background-size: 300% 100%;
+            animation: gradientFlow 4s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--success-color));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+        }
+
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .logo-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        /* Форма регистрации */
+        .register-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group.success .form-input {
+            border-color: var(--success-color);
+            background: rgba(46, 204, 113, 0.05);
+        }
+
+        .form-group.error .form-input {
+            border-color: var(--accent-color);
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            transition: var(--transition);
+            background: white;
+            color: var(--secondary-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+            font-size: 1.2rem;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .form-group:focus-within .input-icon {
+            color: var(--primary-color);
+        }
+
+        .form-group.success .input-icon {
+            color: var(--success-color);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #95a5a6;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            z-index: 2;
+            padding: 5px;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-color);
+        }
+
+        /* Индикатор силы пароля */
+        .password-strength {
+            margin-top: 10px;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .strength-meter {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: #7f8c8d;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .strength-label {
+            transition: color 0.3s ease;
+        }
+
+        /* Сообщения об ошибках */
+        .error-message {
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message i {
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            color: var(--success-color);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Условия согласия */
+        .terms-group {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .terms-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+            line-height: 1.5;
+        }
+
+        .terms-label input[type="checkbox"] {
+            margin-top: 3px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .terms-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .terms-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Кнопка регистрации */
+        .register-button {
+            width: 100%;
+            padding: 20px;
+            background: var(--gradient-secondary);
+            background-size: 200% 100%;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .register-button:hover {
+            background-size: 100% 100%;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .register-button:hover::before {
+            left: 100%;
+        }
+
+        .register-button:active {
+            transform: translateY(-1px);
+        }
+
+        .register-button i {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .register-button:hover i {
+            transform: translateX(5px) rotate(10deg);
+        }
+
+        /* Разделитель */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 35px 0;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            background: white;
+            z-index: 1;
+        }
+
+        /* Ссылка на вход */
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: color 0.3s ease;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .login-link a::before {
+            content: '←';
+            transition: transform 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: var(--secondary-color);
+        }
+
+        .login-link a:hover::before {
+            transform: translateX(-5px);
+        }
+
+        /* Декоративные элементы */
+        .dog-decoration {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.1;
+            z-index: 1;
+            animation: floatAround 8s ease-in-out infinite;
+        }
+
+        .dog-1 {
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .dog-2 {
+            bottom: 5%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .dog-3 {
+            top: 20%;
+            right: 10%;
+            animation-delay: 4s;
+        }
+
+        .dog-4 {
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 6s;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(5deg); }
+            50% { transform: translate(-10px, 10px) rotate(-5deg); }
+            75% { transform: translate(15px, 15px) rotate(3deg); }
+        }
+
+        /* Бонусы за регистрацию */
+        .benefits {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 2px dashed var(--primary-color);
+        }
+
+        .benefits-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .benefits-title i {
+            color: var(--success-color);
+        }
+
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefits-list li {
+            color: #5d6d7e;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 5px;
+        }
+
+        .benefits-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .benefits-list li i {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+
+        /* Сообщения Django */
+        .alert-messages {
+            margin-bottom: 25px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Ошибки форм Django */
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+        }
+
+        .errorlist li {
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .errorlist li:last-child {
+            margin-bottom: 0;
+        }
+
+        .errorlist li i {
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .register-card {
+                padding: 40px 30px;
+            }
+
+            .logo-text {
+                font-size: 2rem;
+            }
+
+            .page-title {
+                font-size: 1.7rem;
+            }
+
+            .form-input {
+                padding: 16px 20px 16px 45px;
+            }
+
+            .dog-decoration {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .register-card {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+
+            .logo {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .terms-group {
+                padding: 15px;
+            }
+        }
+
+        /* Плавный скролл для ошибок */
+        .has-error {
+            animation: pulseError 0.5s ease;
+        }
+
+        @keyframes pulseError {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Декоративные собачки -->
+    <div class="dog-decoration dog-1">🐶</div>
+    <div class="dog-decoration dog-2">🐕</div>
+    <div class="dog-decoration dog-3">🦴</div>
+    <div class="dog-decoration dog-4">🏠</div>
+
+    <div class="container">
+        <div class="register-card">
+            <!-- Шапка -->
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">🐕</div>
+                    <div class="logo-text">Dog&Home</div>
+                </div>
+                <div class="logo-subtitle">Найди дом для лучшего друга</div>
+                <h1 class="page-title">Создание аккаунта</h1>
+                <p class="page-subtitle">
+                    Присоединяйтесь к нашему сообществу любителей собак и находите дом
+                    для тех, кто в нем нуждается
+                </p>
+            </div>
+
+            <!-- Сообщения Django -->
+            {% if messages %}
+            <div class="alert-messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                Пожалуйста, исправьте ошибки в форме
+                <ul class="errorlist">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li><i class="fas fa-exclamation-circle"></i> {{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Форма регистрации -->
+            <form method="post" class="register-form" id="registerForm">
+                {% csrf_token %}
+
+                <!-- Логин (имя пользователя) -->
+                <div class="form-group" id="loginGroup">
+                    <label for="id_username" class="form-label">
+                        <i class="fas fa-user"></i> Логин
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <input type="text"
+                           name="username"
+                           id="id_username"
+                           class="form-input"
+                           placeholder="Придумайте уникальный логин"
+                           value="{{ form.username.value|default:'' }}"
+                           required
+                           autocomplete="username">
+                    {% if form.login.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.login.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Имя -->
+                <div class="form-group" id="firstNameGroup">
+                    <label for="id_first_name" class="form-label">
+                        <i class="fas fa-user"></i> Имя
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-user-tag"></i>
+                    </div>
+                    <input type="text"
+                           name="first_name"
+                           id="id_first_name"
+                           class="form-input"
+                           placeholder="Ваше имя"
+                           value="{{ form.first_name.value|default:'' }}"
+                           required
+                           autocomplete="given-name">
+                    {% if form.first_name.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.first_name.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Фамилия -->
+                <div class="form-group" id="lastNameGroup">
+                    <label for="id_last_name" class="form-label">
+                        <i class="fas fa-user"></i> Фамилия
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <input type="text"
+                           name="last_name"
+                           id="id_last_name"
+                           class="form-input"
+                           placeholder="Ваша фамилия"
+                           value="{{ form.last_name.value|default:'' }}"
+                           required
+                           autocomplete="family-name">
+                    {% if form.last_name.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.last_name.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Пароль -->
+                <div class="form-group" id="passwordGroup">
+                    <label for="id_password_1" class="form-label">
+                        <i class="fas fa-lock"></i> Пароль
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="password-container">
+                        <input type="password"
+                               name="password_1"
+                               id="id_password_1"
+                               class="form-input"
+                               placeholder="Не менее 8 символов"
+                               required
+                               autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('id_password_1')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-meter" id="passwordStrength"></div>
+                    </div>
+                    <div class="strength-text">
+                        <span class="strength-label" id="strengthLabel">Слабая</span>
+                        <span id="passwordLength">0 символов</span>
+                    </div>
+                    {% if form.password_1.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.password_1.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Подтверждение пароля -->
+                <div class="form-group" id="password2Group">
+                    <label for="id_password_2" class="form-label">
+                        <i class="fas fa-lock"></i> Подтверждение пароля
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="password-container">
+                        <input type="password"
+                               name="password_2"
+                               id="id_password_2"
+                               class="form-input"
+                               placeholder="Повторите пароль"
+                               required
+                               autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('id_password_2')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    {% if form.password_2.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.password_2.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="success-message" id="passwordMatch" style="display: none;">
+                        <i class="fas fa-check"></i> Пароли совпадают
+                    </div>
+                </div>
+
+                <!-- Условия согласия -->
+                <div class="terms-group">
+                    <label class="terms-label">
+                        <input type="checkbox" name="terms" id="id_terms" required>
+                        <span>
+                            Я согласен с
+                            <a href="#" class="terms-link">условиями использования</a>
+                            и
+                            <a href="#" class="terms-link">политикой конфиденциальности</a>.
+                            Регистрируясь, я подтверждаю, что мне исполнилось 18 лет.
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Кнопка регистрации -->
+                <button type="submit" class="register-button" id="registerButton">
+                    <span>Создать аккаунт</span>
+                    <i class="fas fa-paw"></i>
+                </button>
+            </form>
+
+            <!-- Разделитель -->
+            <div class="divider">
+                <span>Уже есть аккаунт?</span>
+            </div>
+
+            <!-- Ссылка на вход -->
+            <div class="login-link">
+                Войти в существующий аккаунт
+                <a href="{% url 'login' %}">
+                    Войти
+                </a>
+            </div>
+
+            <!-- Бонусы за регистрацию -->
+            <div class="benefits">
+                <h3 class="benefits-title">
+                    <i class="fas fa-gift"></i>
+                    Что вы получите после регистрации:
+                </h3>
+                <ul class="benefits-list">
+                    <li><i class="fas fa-check"></i> Добавляйте собак в базу данных</li>
+                    <li><i class="fas fa-check"></i> Общайтесь с другими собаководами</li>
+                    <li><i class="fas fa-check"></i> Получайте помощь от сообщества</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

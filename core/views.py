@@ -1,30 +1,38 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, Http404
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from .models import Dog
 from .forms import DogModelForm
+from django.views import View
+from django.views.generic import TemplateView
 
 
-def dog(request):
-    dog = Dog.objects.all()
-    context = {'dog': dog}
-    return render(request, 'main.html', context)
+#def dog(request):
+    #dog = Dog.objects.all()
+    #context = {'dog': dog}
+    #return render(request, 'main.html', context)
 
 def add_dog_with_form(request):
     form = DogModelForm()
 
-    if request.method == 'POST':
-            print(request.POST)
-            print(request.FILES)
-            form = DogModelForm(request.POST, request.FILES)
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = DogModelForm(request.POST, request.FILES)
 
-            if form.is_valid():
-                # создать объект в базе
-                dog = form.save()
+        if form.is_valid():
 
-                return redirect('main')
+            dog = form.save(commit=False)
+            dog.profile = request.user.profile
+            dog.save()
+            form = DogModelForm()
 
-    context = {'form': form}
-    return render(request, 'add_dog.html', context)
+    dog = []
+
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        dog = Dog.objects.filter(profile=profile)
+
+    context = {'form': form, 'dog': dog}
+    return render(request, 'main.html', context)
 
 
 
