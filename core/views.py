@@ -35,3 +35,11 @@ def delete_dog(request, dog_id):
     dog.delete()
 
     return redirect('main')
+
+def dog_detail(request, dog_id):
+
+    dog = Dog.objects.get(id=dog_id)
+
+    context = {'dog_template': dog}
+
+    return render(request, 'dog_detail.html', context)
