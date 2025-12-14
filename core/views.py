@@ -25,4 +25,13 @@ def add_dog_with_form(request):
 
     context = {'form': form}
     return render(request, 'add_dog.html', context)
-# Create your views here.
+
+
+
+def delete_dog(request, dog_id):
+
+    dog = Dog.objects.get(id=dog_id)
+
+    dog.delete()
+
+    return redirect('main')

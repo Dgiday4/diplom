@@ -226,6 +226,15 @@
                     {% if sobaka.description %}
                     <p><strong>Описание:</strong> {{ sobaka.description }}</p>
                     {% endif %}
+
+                <form method="POST" action="{% url 'delete_dog' sobaka.id %}"
+                      class="delete-form"
+                      onsubmit="return confirmDelete('{{ sobaka.name }}')">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">
+                        🗑️ Удалить собаку
+                    </button>
+                </form>
                 </div>
                 {% endfor %}
             </div>
