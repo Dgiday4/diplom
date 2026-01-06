@@ -7,6 +7,7 @@ urlpatterns = [
     path('', add_dog_with_form, name='main'),
     path('dog/<int:dog_id>/delete',  delete_dog, name='delete_dog'),
     path('dog/<int:dog_id>',  dog_detail, name='dog_detail'),
+
 ]
 
 if settings.DEBUG:

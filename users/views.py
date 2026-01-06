@@ -4,6 +4,7 @@ from .forms import LoginForm, RegisterForm
 from .models import User, Profile
 
 
+
 def login(request):
     form = LoginForm(request)
     if request.method == 'POST':
@@ -44,3 +45,23 @@ def registrathion(request):
             return redirect('/')
     context = {'form': form}
     return render(request, 'users/registrathion.html', context)
+
+
+def profile_card(request):
+    profile = Profile.objects.get(user=request.user)
+    context = {'user': request.user, 'profile': profile}
+    return render(request, 'users/profile_card.html', context)
+
+
+def search_users(request):
+    query = request.GET.get('q', '')
+    users = User.objects.filter(username__icontains=query) if query else []
+
+    context = {
+        'query': query,  # Добавляем query в контекст
+        'users': users,
+        'users_count': users.count(),  # Добавляем количество
+        'total_results': users.count(),  # Добавляем общее количество
+    }
+
+    return render(request, 'users/search.html', context)

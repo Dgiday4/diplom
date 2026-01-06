@@ -779,7 +779,7 @@
                 {% if user.is_authenticated %}
                     <div class="user-info">
                         <div class="user-avatar">
-                            {{ user.first_name|default:user.username|first|upper }}
+                           <a href="{% url 'profile_card' %}"> {{ user.first_name|default:user.username|first|upper }}</a>
                         </div>
                         <div class="user-name">
                             {% if user.first_name %}
@@ -825,7 +825,7 @@
                     <span class="logo-icon">🐶</span>
                 </h1>
                 <p class="welcome-subtitle">
-                    Здесь вы можете управлять информацией о ваших собаках и помогать им найти лучшие дома
+                    Здесь вы можете управлять информацией о ваших собаках
                 </p>
             {% else %}
                 <h1 class="welcome-title">
@@ -840,6 +840,14 @@
 
         <!-- Если пользователь авторизован -->
         {% if user.is_authenticated %}
+        <form method="get" action="{% url 'search_users' %}" class="search-form">
+    <input type="text"
+           name="q"
+           placeholder="Поиск собак и пользователей..."
+           value="{{ request.GET.q }}"
+           aria-label="Поиск">
+    <button type="submit">🔍</button>
+</form>
             <!-- Форма добавления собаки -->
             <section class="add-dog-section">
                 <div class="section-header">
