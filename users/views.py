@@ -58,10 +58,10 @@ def search_users(request):
     users = User.objects.filter(username__icontains=query) if query else []
 
     context = {
-        'query': query,  # Добавляем query в контекст
+        'query': query,
         'users': users,
-        'users_count': users.count(),  # Добавляем количество
-        'total_results': users.count(),  # Добавляем общее количество
+        'users_count': users.count(),
+        'total_results': users.count(),
     }
 
     return render(request, 'users/search.html', context)
