@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+{% if user.is_authenticated and not is_own_profile %}
+    <div class="friend-action">
+        {% if are_friends %}
+            <form method="post" action="{% url 'remove_friend' profile_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Удалить из друзей?')">
+                    ❌ Удалить из друзей
+                </button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'add_friend' profile_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">
+                    🤝 Добавить в друзья
+                </button>
+            </form>
+        {% endif %}
+    </div>
+{% endif %}
+</html>

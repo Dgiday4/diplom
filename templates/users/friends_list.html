@@ -1,0 +1,131 @@
+{% block content %}
+<div class="friends-container">
+    <h1>{{ page_title }}</h1>
+    
+    <div class="friends-stats">
+        <p>Всего друзей: <strong>{{ friends_count }}</strong></p>
+    </div>
+    
+    {% if friends %}
+        <div class="friends-list">
+            {% for friend in friends %}
+                <div class="friend-item">
+                    <a href="{% url 'profile_card' %}?user_id={{ friend.id }}" class="friend-link">
+                        <img src="{{ friend.profile.avatar.url|default:'https://via.placeholder.com/80' }}" 
+                             alt="{{ friend.username }}" class="friend-avatar">
+                        <div class="friend-info">
+                            <h3>{{ friend.get_full_name|default:friend.username }}</h3>
+                            <p>@{{ friend.username }}</p>
+                            {% if friend.profile.city %}
+                                <p class="city">📍 {{ friend.profile.city }}</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                    
+                    <!-- Кнопка удаления (только для своих друзей) -->
+                    {% if page_title == 'Мои друзья' %}
+                        <form method="post" action="{% url 'remove_friend' friend.id %}" 
+                              class="remove-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-remove" 
+                                    onclick="return confirm('Удалить из друзей?')">
+                                Удалить
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-friends">
+            <p>😔 Нет друзей</p>
+            <p>Найдите друзей через поиск пользователей!</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.friends-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.friends-stats {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.3s;
+}
+
+.friend-item:hover {
+    background: #f8f9fa;
+}
+
+.friend-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    flex: 1;
+}
+
+.friend-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 2px solid #4d96ff;
+}
+
+.friend-info h3 {
+    margin: 0 0 5px 0;
+}
+
+.friend-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.city {
+    color: #888;
+    font-size: 13px;
+}
+
+.btn-remove {
+    padding: 8px 16px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-remove:hover {
+    background: #ff5252;
+}
+
+.no-friends {
+    text-align: center;
+    padding: 50px 20px;
+    color: #666;
+}
+
+.no-friends p:first-child {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}

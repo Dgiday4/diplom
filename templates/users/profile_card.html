@@ -47,6 +47,83 @@
             margin-bottom: 20px;
         }
 
+        .friend-button-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .btn-friend {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 180px;
+        }
+
+        .btn-add-friend {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-add-friend:hover {
+            background: linear-gradient(135deg, #388E3C 0%, #1B5E20 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-remove-friend {
+            background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-remove-friend:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .friend-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .friend-stat {
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .friend-stat:hover {
+            color: #4a90e2;
+        }
+
+        .friend-stat strong {
+            display: block;
+            font-size: 20px;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .friend-stat span {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
         .profile-info {
             border-top: 1px solid #eee;
             padding-top: 20px;
@@ -86,10 +163,32 @@
             text-decoration: none;
             margin-top: 15px;
             text-align: center;
+            transition: background-color 0.3s;
         }
 
         .logout-btn:hover {
             background-color: #d32f2f;
+        }
+
+        .action-links {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .action-links a {
+            color: #4a90e2;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .action-links a:hover {
+            background-color: #f0f8ff;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -97,9 +196,46 @@
     <div class="profile-card">
         <div class="profile-header">
             {% if user.is_authenticated %}
+                <!-- Аватар пользователя -->
+                <img src="https://via.placeholder.com/100/4a90e2/ffffff?text={{ user.username|first|upper }}"
+                     alt="Аватар"
+                     class="profile-avatar">
 
-                <h2 class="username">{{ user.username }}</h2>
-                <p class="email">{{ user.email }}</p>
+                <h2 class="username">{{ profile_user.username }}</h2>
+                <p class="email">{{ profile_user.email }}</p>
+
+
+                {% if not is_own_profile and user.is_authenticated %}
+                    <div class="friend-button-container">
+                        {% if are_friends %}
+                            <form method="post" action="{% url 'remove_friend' profile_user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-friend btn-remove-friend"
+                                        onclick="return confirm('Удалить из друзей?')">
+                                    <span>❌</span>
+                                    Удалить из друзей
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'add_friend' profile_user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-friend btn-add-friend">
+                                    <span>🤝</span>
+                                    Добавить в друзья
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+
+                <div class="friend-stats">
+                    <a href="{% url 'user_friends_list' profile_user.id %}" class="friend-stat">
+                        <strong>{{ friends_count }}</strong>
+                        <span>друзей</span>
+                    </a>
+                </div>
+
             {% else %}
                 <h2>Вы не авторизованы</h2>
                 <p>Пожалуйста, войдите в систему</p>
@@ -132,12 +268,12 @@
 
                 <div class="info-item">
                     <span class="info-label">Дата регистрации:</span>
-                    <span class="info-value">{{ user.date_joined|date:"d.m.Y" }}</span>
+                    <span class="info-value">{{ profile_user.date_joined|date:"d.m.Y" }}</span>
                 </div>
 
                 <div class="info-item">
                     <span class="info-label">Последний вход:</span>
-                    <span class="info-value"> {{ user.last_login|date:"d.m.Y H:i" }}</span>
+                    <span class="info-value">{{ profile_user.last_login|date:"d.m.Y H:i" }}</span>
                 </div>
 
                 {% if user.is_staff %}
@@ -145,6 +281,14 @@
                     <span class="info-label">Статус:</span>
                     <span class="info-value" style="color: #4CAF50;">Администратор</span>
                 </div>
+                {% endif %}
+            </div>
+
+            <div class="action-links">
+                <a href="{% url 'friends_list' %}">👥 Мои друзья</a>
+                <a href="/">🏠 На главную</a>
+                {% if is_own_profile %}
+                    <a href="{% url 'profile_card' %}">📝 Мой профиль</a>
                 {% endif %}
             </div>
 
@@ -159,7 +303,7 @@
         {% else %}
             <div style="text-align: center; margin-top: 20px;">
                 <a href="{% url 'login' %}" style="color: #4a90e2; text-decoration: none;">Войти</a> |
-                <a href="{% url 'signup' %}" style="color: #4a90e2; text-decoration: none;">Зарегистрироваться</a>
+                <a href="{% url 'registrathion' %}" style="color: #4a90e2; text-decoration: none;">Зарегистрироваться</a>
             </div>
         {% endif %}
     </div>
