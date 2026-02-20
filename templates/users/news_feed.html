@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лента новостей - Dog&Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9f3e9 0%, #e8f4f8 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .feed-header {
+            text-align: center;
+            padding: 30px 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feed-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff9a3c, #ff6b6b, #4d96ff);
+        }
+
+        .feed-header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .feed-header h1::before {
+            content: "🐕";
+            font-size: 2rem;
+        }
+
+        .feed-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .create-post-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .post-input textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .post-input textarea:focus {
+            outline: none;
+            border-color: #4d96ff;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .image-upload {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .image-upload:hover {
+            background: #e9ecef;
+        }
+
+        .btn-post {
+            background: linear-gradient(135deg, #4d96ff 0%, #6bc5ff 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(77,150,255,0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-post:hover {
+            background: linear-gradient(135deg, #357ae8 0%, #4d96ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(77,150,255,0.4);
+        }
+
+        .search-form {
+            display: flex;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #fff;
+            border-right: none;
+            border-radius: 50px 0 0 50px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-form input:focus {
+            border-color: #4d96ff;
+        }
+
+        .search-form button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4d96ff 0%, #6bc5ff 100%);
+            color: white;
+            border: none;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .search-form button:hover {
+            background: linear-gradient(135deg, #357ae8 0%, #4d96ff 100%);
+        }
+
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #4d96ff;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #4d96ff;
+            object-fit: cover;
+        }
+
+        .post-author {
+            flex: 1;
+        }
+
+        .post-author a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .post-author a:hover {
+            color: #4d96ff;
+        }
+
+        .post-date {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .delete-form {
+            margin-left: auto;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .post-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+
+        .post-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .post-footer {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #f8f9fa;
+        }
+
+        .like-form, .comment-link {
+            display: inline-block;
+        }
+
+        .like-btn, .comment-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+        }
+
+        .comment-btn {
+            background: none;
+            border: none;
+        }
+
+        .like-btn:hover, .comment-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .like-btn.liked {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .comment-btn:hover {
+            color: #4d96ff;
+        }
+
+        .likes-count {
+            font-weight: normal;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 10px 18px;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #4d96ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover {
+            background: #4d96ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(77,150,255,0.3);
+        }
+
+        .pagination .current-page {
+            background: #4d96ff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            color: #666;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .empty-feed p:first-child {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-feed a {
+            color: #4d96ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .empty-feed a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #4d96ff;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #357ae8;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .feed-header h1 {
+                font-size: 2rem;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .image-upload, .btn-post {
+                width: 100%;
+                text-align: center;
+            }
+
+            .post-footer {
+                justify-content: space-around;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .pagination a, .pagination span {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="feed-container">
+
+        <div class="feed-header">
+            <h1>Лента новостей</h1>
+            <p>Последние события от любителей собак</p>
+        </div>
+
+
+        {% if request.user.is_authenticated %}
+            <div class="create-post-card">
+                <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="post-input">
+                        <textarea name="content" placeholder="Что у вас нового? Расскажите о своей собаке..."></textarea>
+                        <div class="post-actions">
+                            <label class="image-upload">
+                                <span>📷 Добавить фото</span>
+                                <input type="file" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <button type="submit" class="btn-post">Опубликовать</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+
+        <form method="get" action="{% url 'news_feed' %}" class="search-form">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Поиск по постам...">
+            <button type="submit">🔍 Найти</button>
+        </form>
+
+
+        <div class="posts-list">
+            {% for post in page_obj %}
+                <div class="post-card">
+                    <div class="post-header">
+
+                        <img src="{% if post.author.profile.avatar %}{{ post.author.profile.avatar.url }}{% else %}https://via.placeholder.com/50/4a90e2/ffffff?text={{ post.author.username|first|upper }}{% endif %}"
+                             alt="{{ post.author.username }}" class="post-avatar">
+
+                        <div class="post-author">
+                            <a href="{% url 'profile_card' %}?user_id={{ post.author.id }}">
+                                <strong>{{ post.author.get_full_name|default:post.author.username }}</strong>
+                            </a>
+                            <small class="post-date">{{ post.created_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+
+
+                        {% if request.user.is_authenticated and post.author == request.user %}
+                            <form method="post" action="{% url 'delete_post' post.id %}"
+                                  onsubmit="return confirm('Удалить пост?')" class="delete-form">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" title="Удалить пост">✕</button>
+                            </form>
+                        {% endif %}
+                    </div>
+
+                    <div class="post-content">
+                        {% if post.content %}
+                            <p>{{ post.content|linebreaksbr }}</p>
+                        {% endif %}
+
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+                        {% endif %}
+                    </div>
+
+                    <div class="post-footer">
+                        {% if request.user.is_authenticated %}
+                            <form method="post" action="{% url 'like_post' post.id %}" class="like-form">
+                                {% csrf_token %}
+                                    ❤️ <span class="likes-count">{{ post.total_likes }}</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="like-btn">
+                                ❤️ <span class="likes-count">{{ post.total_likes }}</span>
+                            </a>
+                        {% endif %}
+
+
+                        <a href="{% url 'post_detail' post.id %}" class="comment-btn">
+                            💬 {{ post.comments.count }} комментариев
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-feed">
+                    <p>😔 Пока нет постов</p>
+                    {% if request.user.is_authenticated %}
+                        <p>Станьте первым, кто опубликует пост!</p>
+                    {% else %}
+                        <p><a href="{% url 'login' %}">Войдите</a>, чтобы публиковать посты</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if query %}&q={{ query }}{% endif %}">« Первая</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹ Предыдущая</a>
+                {% endif %}
+
+                <span class="current-page">{{ page_obj.number }}</span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Следующая ›</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Последняя »</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <a href="/" class="back-link">
+            ← Вернуться на главную
+        </a>
+    </div>
+</body>
+</html>
