@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout', logout, name='logout'),
     path('registrathion', registrathion, name='registrathion'),
     path('profile_card/', profile_card, name='profile_card'),
+    path('edit-profile/', edit_profile, name='edit_profile'),
     path('search', search_users, name='search_users'),
 
     #Друзья

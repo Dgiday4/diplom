@@ -8,6 +8,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=255, verbose_name='имя', blank=True)
     last_name = models.CharField(max_length=255, verbose_name='фамилия', blank=True)
+    avatar = models.ImageField(verbose_name='Аватар', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user} {self.first_name}"

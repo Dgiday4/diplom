@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as login_func, logout as logout_func, authenticate
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm,ProfileForm
 from django.contrib import messages
 from .models import User, Profile
 from .models import Friends
 from django.db.models import Q
 from .models import Post, Comment
 from django.core.paginator import Paginator
+from core.models import Dog
 
 
 
@@ -81,6 +82,10 @@ def profile_card(request):
         except:
             are_friends = False
 
+        # Получаем собак пользователя
+    dogs = Dog.objects.filter(profile=profile)
+    dogs_count = dogs.count()
+
     # Получаем последних друзей для предпросмотра
     friends_preview = friends[:6] if friends else []
 
@@ -95,6 +100,10 @@ def profile_card(request):
         'friends_count': friends_count,
         'are_friends': are_friends,
         'is_own_profile': is_own_profile,
+
+        # Информация о собаках
+        'dogs': dogs,
+        'dogs_count': dogs_count,
     }
 
     return render(request, 'users/profile_card.html', context)
@@ -263,7 +272,7 @@ def post_detail(request, post_id):
 
 
 def delete_post(request, post_id):
-   #функция чтобы можно было удалить свой профиль ( вдруг случайно опубликовал)
+   #функция чтобы можно было удалить свой пост ( вдруг случайно опубликовал)
     post = get_object_or_404(Post, id=post_id, author=request.user)
 
     if request.method == 'POST':
@@ -272,3 +281,24 @@ def delete_post(request, post_id):
         return redirect('news_feed')
 
     return redirect('news_feed')
+
+#функция редактирования профиля
+
+def edit_profile(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Профиль успешно обновлен!')
+            return redirect('profile_card')
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {
+        'form': form,
+        'profile': profile,
+    }
+
+    return render(request, 'users/edit_profile.html', context)

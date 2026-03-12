@@ -438,6 +438,182 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+          /* Форма комментария */
+        .comment-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .comment-form button {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Список комментариев */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .comment-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #3498db;
+        }
+
+        .comment-avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .comment-author {
+            flex: 1;
+        }
+
+        .comment-author-name {
+            font-weight: 700;
+            color: #2c3e50;
+            display: block;
+        }
+
+        .comment-date {
+            font-size: 0.85rem;
+            color: #95a5a6;
+        }
+
+        .comment-text {
+            color: #34495e;
+            line-height: 1.6;
+            margin-left: 65px;
+            font-size: 1rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-delete {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .comment-delete:hover {
+            background: #fee;
+            transform: scale(1.05);
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            color: #95a5a6;
+            font-size: 1.1rem;
+        }
+
+        .no-comments::before {
+            content: "💭";
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .login-prompt a {
+            color: #3498db;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-prompt a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -575,16 +751,20 @@
                 <div class="details-card">
                     <h3>👨‍👩‍👦 Владелец</h3>
                     <ul class="details-list">
-                        {% if dog_template.owner_name %}
+                        {% if dog_template.user_name %}
                         <li>
-                            <span class="detail-label">Владелец:</span>
-                            <span class="detail-value">{{ dog_template.owner_name }}</span>
-                        </li>
+    <span class="detail-label">Владелец:</span>
+    <span class="detail-value">
+        <a href="{% url 'profile_card' %}?user_id={{ dog_template.profile.user.id }}" style="color: #3498db; text-decoration: none;">
+            {{ dog_template.profile.user.username }}
+        </a>
+    </span>
+</li>
                         {% endif %}
-                        {% if dog_template.owner_phone %}
+                        {% if dog_template.user_phone %}
                         <li>
                             <span class="detail-label">Телефон:</span>
-                            <span class="detail-value">{{ dog_template.owner_phone }}</span>
+                            <span class="detail-value">{{ dog_template.user_phone }}</span>
                         </li>
                         {% endif %}
                         <li>
@@ -594,7 +774,72 @@
                     </ul>
                 </div>
             </section>
+<!-- Секция комментариев -->
+            <section class="comments-section">
+    <h2>💬 Комментарии ({{ dog_template.comments.count }})</h2>
 
+    {% if user.is_authenticated %}
+        <!-- Форма добавления комментария (ИСПРАВЛЕНО) -->
+        <form method="post" action="{% url 'add_dog_comment' dog_id=dog_template.id %}" class="comment-form">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Оставьте комментарий о {{ dog_template.name }}..." required></textarea>
+            <button type="submit">
+                <span>💬</span> Отправить комментарий
+            </button>
+        </form>
+    {% else %}
+        <div class="login-prompt">
+            <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий
+        </div>
+    {% endif %}
+
+    <!-- Список комментариев -->
+    <div class="comments-list">
+        {% for comment in dog_template.comments.all %}
+            <div class="comment-card" id="comment-{{ comment.id }}">
+                <div class="comment-header">
+                    {% if comment.author.profile.avatar %}
+                        <img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author.username }}" class="comment-avatar">
+                    {% else %}
+                        <div class="comment-avatar-placeholder">{{ comment.author.username|first|upper }}</div>
+                    {% endif %}
+
+                    <div class="comment-author">
+                        <span class="comment-author-name">
+                            {% if comment.author.get_full_name %}
+                                {{ comment.author.get_full_name }}
+                            {% else %}
+                                {{ comment.author.username }}
+                            {% endif %}
+                        </span>
+                        <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <div class="comment-text">
+                    {{ comment.text|linebreaks }}
+                </div>
+
+                <!-- Кнопка удаления -->
+                {% if user.is_authenticated and user == comment.author or user == dog_template.owner or user.is_staff %}
+                <div class="comment-actions">
+                    <form method="post" action="{% url 'delete_dog_comment' comment.id %}"
+                          onsubmit="return confirm('Удалить этот комментарий?')">
+                        {% csrf_token %}
+                        <button type="submit" class="comment-delete">
+                            <span>🗑️</span> Удалить
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="no-comments">
+                Пока нет комментариев. Будьте первым!
+            </div>
+        {% endfor %}
+    </div>
+</section>
             <!-- Кнопки действий -->
             <div class="action-buttons">
                 <a href="{% url 'main' %}" class="btn btn-secondary">
