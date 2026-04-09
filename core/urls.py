@@ -9,6 +9,7 @@ urlpatterns = [
     path('dog/<int:dog_id>',  dog_detail, name='dog_detail'),
     path('dog/<int:dog_id>/comment/', add_dog_comment, name='add_dog_comment'),
     path('comment/<int:comment_id>/delete/', delete_dog_comment, name='delete_dog_comment'),
+    path('edit_dog/<int:dog_id>/', edit_dog, name='edit_dog'),
 
 ]
 

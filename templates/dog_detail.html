@@ -1,905 +1,269 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ dog_template.name }} - Dog&Home</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-            min-height: 100vh;
-            color: #2c3e50;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        /* Шапка */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            font-size: 2.5rem;
-            animation: wiggle 2s infinite;
-        }
-
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-        }
-
-        .logo-text {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .back-btn {
-            background: white;
-            border: 2px solid #3498db;
-            color: #3498db;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
-        }
-
-        .back-btn:hover {
-            background: #3498db;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.2);
-        }
-
-        /* Основной контент */
-        .dog-detail {
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.8s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Верхняя часть с фото и основной инфо */
-        .dog-hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            padding: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        @media (max-width: 768px) {
-            .dog-hero {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
-
-        .dog-image-container {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            height: 400px;
-        }
-
-        .dog-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .dog-image:hover {
-            transform: scale(1.05);
-        }
-
-        .image-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #2c3e50;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .dog-main-info {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 35px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .dog-name {
-            font-size: 2.8rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .dog-age {
-            background: #3498db;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .dog-breed {
-            font-size: 1.4rem;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-weight: 500;
-        }
-
-        /* Характеристики */
-        .dog-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .stat-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-5px);
-            border-color: #3498db;
-            background: white;
-        }
-
-        .stat-label {
-            display: block;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            display: block;
-            color: #2c3e50;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .color-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .color-circle {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 0 2px #ddd;
-        }
-
-        /* Описание */
-        .dog-description-section {
-            padding: 40px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #3498db;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: "📝";
-        }
-
-        .description-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #34495e;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Детальная информация */
-        .dog-details {
-            padding: 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .details-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e9ecef;
-            transition: transform 0.3s ease;
-        }
-
-        .details-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .details-card h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .details-list {
-            list-style: none;
-        }
-
-        .details-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .details-list li:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: #7f8c8d;
-            font-weight: 500;
-        }
-
-        .detail-value {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        /* Кнопки действий */
-        .action-buttons {
-            display: flex;
-            gap: 20px;
-            padding: 40px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 16px 35px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-secondary {
-            background: #95a5a6;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #7f8c8d;
-            transform: translateY(-3px);
-        }
-
-        /* Футер */
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid #e0e0e0;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-
-            .dog-name {
-                font-size: 2.2rem;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .btn {
-                min-width: 100%;
-            }
-
-            .dog-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Элементы иконок */
-        .icon {
-            font-size: 1.2rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin: 0 5px;
-        }
-
-        .badge-blue { background: #e3f2fd; color: #1976d2; }
-        .badge-green { background: #e8f5e9; color: #388e3c; }
-        .badge-orange { background: #fff3e0; color: #f57c00; }
-
-        /* Анимации */
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-          /* Форма комментария */
-        .comment-form {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .comment-form textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
-        }
-
-        .comment-form textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .comment-form button {
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .comment-form button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        /* Список комментариев */
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .comment-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
-        }
-
-        .comment-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .comment-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #3498db;
-        }
-
-        .comment-avatar-placeholder {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .comment-author {
-            flex: 1;
-        }
-
-        .comment-author-name {
-            font-weight: 700;
-            color: #2c3e50;
-            display: block;
-        }
-
-        .comment-date {
-            font-size: 0.85rem;
-            color: #95a5a6;
-        }
-
-        .comment-text {
-            color: #34495e;
-            line-height: 1.6;
-            margin-left: 65px;
-            font-size: 1rem;
-        }
-
-        .comment-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .comment-delete {
-            background: none;
-            border: none;
-            color: #e74c3c;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .comment-delete:hover {
-            background: #fee;
-            transform: scale(1.05);
-        }
-
-        .no-comments {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 15px;
-            color: #95a5a6;
-            font-size: 1.1rem;
-        }
-
-        .no-comments::before {
-            content: "💭";
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .login-prompt {
-            text-align: center;
-            padding: 20px;
-            background: #e3f2fd;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .login-prompt a {
-            color: #3498db;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .login-prompt a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Шапка -->
-        <header class="header">
-            <a href="{% url 'main' %}" class="logo">
-                <span class="logo-icon">🐶</span>
-                <span class="logo-text">Dog&Home</span>
-            </a>
-            <a href="{% url 'main' %}" class="back-btn">
-                ← Назад к списку
-            </a>
-        </header>
-
-        <!-- Основная информация о собаке -->
-        <main class="dog-detail">
-            <!-- Верхняя часть с фото -->
-            <div class="dog-hero">
-                <div class="dog-image-container">
-                    {% if dog_template.image %}
-                        <img src="{{ dog_template.image.url }}" alt="{{ dog_template.name }}" class="dog-image">
-                    {% else %}
-                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
-                            🐕 Нет фото
-                        </div>
-                    {% endif %}
-                    <div class="image-badge">ID: {{ dog_template.id }}</div>
+<!-- templates/dog_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ dog_template.name }} - Dog&Home{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/dog_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dog-detail">
+    <!-- Верхняя часть с фото -->
+    <div class="dog-hero">
+        <div class="dog-image-container">
+            {% if dog_template.image %}
+                <img src="{{ dog_template.image.url }}" alt="{{ dog_template.name }}" class="dog-image">
+            {% else %}
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                    🐕 Нет фото
                 </div>
+            {% endif %}
+            <div class="image-badge">ID: {{ dog_template.id }}</div>
+        </div>
 
-                <div class="dog-main-info">
-                    <h1 class="dog-name">
-                        {{ dog_template.name }}
-                        <span class="dog-age">{{ dog_template.age }} лет</span>
-                    </h1>
+        <div class="dog-main-info">
+            <h1 class="dog-name">
+                {{ dog_template.name }}
+                <span class="dog-age">{{ dog_template.age }} лет</span>
+            </h1>
 
-                    {% if dog_template.breed %}
-                    <div class="dog-breed">{{ dog_template.breed }}</div>
-                    {% endif %}
-
-                    <!-- Характеристики -->
-                    <div class="dog-stats">
-                        {% if dog_template.color %}
-                        <div class="stat-item">
-                            <span class="stat-label">Цвет шерсти</span>
-                            <div class="stat-value color-display">
-                                <span class="color-circle" style="background-color: {{ dog_template.color }};"></span>
-                                {{ dog_template.color }}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if dog_template.weight %}
-                        <div class="stat-item">
-                            <span class="stat-label">Вес</span>
-                            <span class="stat-value">{{ dog_template.weight }} кг</span>
-                        </div>
-                        {% endif %}
-
-                        {% if dog_template.height %}
-                        <div class="stat-item">
-                            <span class="stat-label">Рост</span>
-                            <span class="stat-value">{{ dog_template.height }} см</span>
-                        </div>
-                        {% endif %}
-
-                        <div class="stat-item">
-                            <span class="stat-label">Статус</span>
-                            <span class="stat-value badge badge-green">Активен</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Описание -->
-            {% if dog_template.description %}
-            <section class="dog-description-section">
-                <h2 class="section-title">Описание</h2>
-                <div class="description-content">
-                    {{ dog_template.description|linebreaks }}
-                </div>
-            </section>
+            {% if dog_template.breed %}
+            <div class="dog-breed">{{ dog_template.breed }}</div>
             {% endif %}
 
-            <!-- Детальная информация -->
-            <section class="dog-details">
-                <div class="details-card">
-                    <h3>📋 Основная информация</h3>
-                    <ul class="details-list">
-                        <li>
-                            <span class="detail-label">Имя:</span>
-                            <span class="detail-value">{{ dog_template.name }}</span>
-                        </li>
-                        <li>
-                            <span class="detail-label">Возраст:</span>
-                            <span class="detail-value">{{ dog_template.age }} лет</span>
-                        </li>
-                        {% if dog_template.breed %}
-                        <li>
-                            <span class="detail-label">Порода:</span>
-                            <span class="detail-value">{{ dog_template.breed }}</span>
-                        </li>
-                        {% endif %}
-                        {% if dog_template.color %}
-                        <li>
-                            <span class="detail-label">Цвет:</span>
-                            <span class="detail-value">{{ dog_template.color }}</span>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-
-                <div class="details-card">
-                    <h3>🏥 Здоровье</h3>
-                    <ul class="details-list">
-                        {% if dog_template.vaccinations %}
-                        <li>
-                            <span class="detail-label">Вакцинации:</span>
-                            <span class="detail-value">{{ dog_template.vaccinations }}</span>
-                        </li>
-                        {% endif %}
-                        {% if dog_template.medical_notes %}
-                        <li>
-                            <span class="detail-label">Мед. записи:</span>
-                            <span class="detail-value">{{ dog_template.medical_notes }}</span>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <span class="detail-label">Статус здоровья:</span>
-                            <span class="detail-value badge badge-green">Здоров</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="details-card">
-                    <h3>👨‍👩‍👦 Владелец</h3>
-                    <ul class="details-list">
-                        {% if dog_template.user_name %}
-                        <li>
-    <span class="detail-label">Владелец:</span>
-    <span class="detail-value">
-        <a href="{% url 'profile_card' %}?user_id={{ dog_template.profile.user.id }}" style="color: #3498db; text-decoration: none;">
-            {{ dog_template.profile.user.username }}
-        </a>
-    </span>
-</li>
-                        {% endif %}
-                        {% if dog_template.user_phone %}
-                        <li>
-                            <span class="detail-label">Телефон:</span>
-                            <span class="detail-value">{{ dog_template.user_phone }}</span>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <span class="detail-label">Добавлено:</span>
-                            <span class="detail-value">{{ dog_template.created_at|date:"d.m.Y" }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-<!-- Секция комментариев -->
-            <section class="comments-section">
-    <h2>💬 Комментарии ({{ dog_template.comments.count }})</h2>
-
-    {% if user.is_authenticated %}
-        <!-- Форма добавления комментария (ИСПРАВЛЕНО) -->
-        <form method="post" action="{% url 'add_dog_comment' dog_id=dog_template.id %}" class="comment-form">
-            {% csrf_token %}
-            <textarea name="comment" placeholder="Оставьте комментарий о {{ dog_template.name }}..." required></textarea>
-            <button type="submit">
-                <span>💬</span> Отправить комментарий
-            </button>
-        </form>
-    {% else %}
-        <div class="login-prompt">
-            <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий
-        </div>
-    {% endif %}
-
-    <!-- Список комментариев -->
-    <div class="comments-list">
-        {% for comment in dog_template.comments.all %}
-            <div class="comment-card" id="comment-{{ comment.id }}">
-                <div class="comment-header">
-                    {% if comment.author.profile.avatar %}
-                        <img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author.username }}" class="comment-avatar">
-                    {% else %}
-                        <div class="comment-avatar-placeholder">{{ comment.author.username|first|upper }}</div>
-                    {% endif %}
-
-                    <div class="comment-author">
-                        <span class="comment-author-name">
-                            {% if comment.author.get_full_name %}
-                                {{ comment.author.get_full_name }}
-                            {% else %}
-                                {{ comment.author.username }}
-                            {% endif %}
-                        </span>
-                        <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            <div class="dog-stats">
+                {% if dog_template.color %}
+                <div class="stat-item">
+                    <span class="stat-label">Цвет шерсти</span>
+                    <div class="stat-value color-display">
+                        <span class="color-circle" style="background-color: {{ dog_template.color }};"></span>
+                        {{ dog_template.color }}
                     </div>
                 </div>
+                {% endif %}
 
-                <div class="comment-text">
-                    {{ comment.text|linebreaks }}
-                </div>
-
-                <!-- Кнопка удаления -->
-                {% if user.is_authenticated and user == comment.author or user == dog_template.owner or user.is_staff %}
-                <div class="comment-actions">
-                    <form method="post" action="{% url 'delete_dog_comment' comment.id %}"
-                          onsubmit="return confirm('Удалить этот комментарий?')">
-                        {% csrf_token %}
-                        <button type="submit" class="comment-delete">
-                            <span>🗑️</span> Удалить
-                        </button>
-                    </form>
+                {% if dog_template.weight %}
+                <div class="stat-item">
+                    <span class="stat-label">Вес</span>
+                    <span class="stat-value">{{ dog_template.weight }} кг</span>
                 </div>
                 {% endif %}
-            </div>
-        {% empty %}
-            <div class="no-comments">
-                Пока нет комментариев. Будьте первым!
-            </div>
-        {% endfor %}
-    </div>
-</section>
-            <!-- Кнопки действий -->
-            <div class="action-buttons">
-                <a href="{% url 'main' %}" class="btn btn-secondary">
-                    ← Назад к списку
-                </a>
 
-                <form method="POST" action="{% url 'delete_dog' dog_template.id %}"
-                      onsubmit="return confirm('Вы уверены, что хотите удалить собаку {{ dog_template.name }}?')"
-                      style="flex: 1; min-width: 200px;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                        🗑️ Удалить собаку
-                    </button>
-                </form>
+                {% if dog_template.height %}
+                <div class="stat-item">
+                    <span class="stat-label">Рост</span>
+                    <span class="stat-value">{{ dog_template.height }} см</span>
+                </div>
+                {% endif %}
 
-                <a href="#" class="btn btn-primary">
-                    ✏️ Редактировать
-                </a>
+                <div class="stat-item">
+                    <span class="stat-label">Статус</span>
+                    <span class="stat-value badge-green">Активен</span>
+                </div>
             </div>
-        </main>
-
-        <!-- Футер -->
-        <footer class="footer">
-            <p>Dog&Home © 2024. Все права защищены.</p>
-            <p>ID собаки: {{ dog_template.id }} • Просмотрено: {{ dog_template.views|default:"0" }} раз</p>
-        </footer>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Анимация загрузки
-            const cards = document.querySelectorAll('.stat-item, .details-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
+    <!-- Описание -->
+    {% if dog_template.description %}
+    <section class="dog-description-section">
+        <h2 class="section-title">
+            <i class="fas fa-align-left"></i>
+            Описание
+        </h2>
+        <div class="description-content">
+            {{ dog_template.description|linebreaks }}
+        </div>
+    </section>
+    {% endif %}
 
-            // Подтверждение удаления
-            const deleteForm = document.querySelector('form[action*="delete"]');
-            if (deleteForm) {
-                deleteForm.addEventListener('submit', function(e) {
-                    if (!confirm('Вы уверены, что хотите удалить эту собаку? Это действие нельзя отменить.')) {
-                        e.preventDefault();
-                    }
-                });
-            }
+    <!-- Детальная информация -->
+    <section class="dog-details">
+        <div class="details-card">
+            <h3><i class="fas fa-info-circle"></i> Основная информация</h3>
+            <ul class="details-list">
+                <li>
+                    <span class="detail-label">Имя:</span>
+                    <span class="detail-value">{{ dog_template.name }}</span>
+                </li>
+                <li>
+                    <span class="detail-label">Возраст:</span>
+                    <span class="detail-value">{{ dog_template.age }} лет</span>
+                </li>
+                {% if dog_template.breed %}
+                <li>
+                    <span class="detail-label">Порода:</span>
+                    <span class="detail-value">{{ dog_template.breed }}</span>
+                </li>
+                {% endif %}
+                {% if dog_template.color %}
+                <li>
+                    <span class="detail-label">Цвет:</span>
+                    <span class="detail-value">{{ dog_template.color }}</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
 
-            // Плавный скролл
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
+        <div class="details-card">
+            <h3><i class="fas fa-heartbeat"></i> Здоровье</h3>
+            <ul class="details-list">
+                {% if dog_template.vaccinations %}
+                <li>
+                    <span class="detail-label">Вакцинации:</span>
+                    <span class="detail-value">{{ dog_template.vaccinations }}</span>
+                </li>
+                {% endif %}
+                {% if dog_template.medical_notes %}
+                <li>
+                    <span class="detail-label">Мед. записи:</span>
+                    <span class="detail-value">{{ dog_template.medical_notes }}</span>
+                </li>
+                {% endif %}
+                <li>
+                    <span class="detail-label">Статус здоровья:</span>
+                    <span class="detail-value badge-green">Здоров</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="details-card">
+            <h3><i class="fas fa-user"></i> Владелец</h3>
+            <ul class="details-list">
+                <li>
+                    <span class="detail-label">Владелец:</span>
+                    <span class="detail-value">
+                        {% if dog_template.profile %}
+                            <a href="{% url 'profile_card' %}?user_id={{ dog_template.profile.user.id }}" class="owner-link">
+                                {% if dog_template.profile.avatar %}
+                                    <img src="{{ dog_template.profile.avatar.url }}" alt="{{ dog_template.profile.user.username }}" class="owner-avatar">
+                                {% else %}
+                                    <div class="owner-avatar-placeholder">{{ dog_template.profile.user.username|first|upper }}</div>
+                                {% endif %}
+                                <div class="owner-info">
+                                    <strong>{{ dog_template.profile.user.get_full_name|default:dog_template.profile.user.username }}</strong>
+                                    <small>@{{ dog_template.profile.user.username }}</small>
+                                </div>
+                            </a>
+                        {% else %}
+                            Владелец не указан
+                        {% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span class="detail-label">Добавлено:</span>
+                    <span class="detail-value">{{ dog_template.created_at|date:"d.m.Y" }}</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Секция комментариев -->
+    <section class="comments-section">
+        <h2>
+            <i class="fas fa-comments"></i>
+            Комментарии ({{ dog_template.comments.count }})
+        </h2>
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_dog_comment' dog_id=dog_template.id %}" class="comment-form">
+                {% csrf_token %}
+                <textarea name="comment" placeholder="Оставьте комментарий о {{ dog_template.name }}..." required></textarea>
+                <button type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                    Отправить комментарий
+                </button>
+            </form>
+        {% else %}
+            <div class="login-prompt">
+                <i class="fas fa-lock"></i>
+                <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий
+            </div>
+        {% endif %}
+
+        <div class="comments-list">
+            {% for comment in dog_template.comments.all %}
+                <div class="comment-card" id="comment-{{ comment.id }}">
+                    <div class="comment-header">
+                        {% if comment.author.profile.avatar %}
+                            <img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author.username }}" class="comment-avatar">
+                        {% else %}
+                            <div class="comment-avatar-placeholder">{{ comment.author.username|first|upper }}</div>
+                        {% endif %}
+
+                        <div class="comment-author">
+                            <span class="comment-author-name">
+                                {% if comment.author.get_full_name %}
+                                    {{ comment.author.get_full_name }}
+                                {% else %}
+                                    {{ comment.author.username }}
+                                {% endif %}
+                            </span>
+                            <span class="comment-date">
+                                <i class="far fa-clock"></i>
+                                {{ comment.created_at|date:"d.m.Y H:i" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="comment-text">
+                        {{ comment.text|linebreaks }}
+                    </div>
+
+                    {% if user.is_authenticated and user == comment.author or user == dog_template.profile.user or user.is_staff %}
+                    <div class="comment-actions">
+                        <form method="post" action="{% url 'delete_dog_comment' comment.id %}"
+                              onsubmit="return confirm('Удалить этот комментарий?')">
+                            {% csrf_token %}
+                            <button type="submit" class="comment-delete">
+                                <i class="fas fa-trash-alt"></i> Удалить
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="no-comments">
+                    <i class="far fa-comment-dots"></i>
+                    <p>Пока нет комментариев. Будьте первым!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+        <a href="javascript:history.back()" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Назад
+        </a>
+
+        {% if user.is_authenticated and user == dog_template.profile.user or user.is_staff %}
+        <form method="POST" action="{% url 'delete_dog' dog_template.id %}"
+              onsubmit="return confirm('Вы уверены, что хотите удалить собаку {{ dog_template.name }}?')"
+              style="flex: 1; min-width: 200px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Удалить собаку
+            </button>
+        </form>
+
+        <a href="{% url 'edit_dog' dog_template.id %}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Редактировать
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.details-card, .stat-item');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}

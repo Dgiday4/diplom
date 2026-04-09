@@ -1,492 +1,160 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Результаты поиска - Dog&Home</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<!-- templates/users/search.html -->
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            background: linear-gradient(135deg, #f9f3e9 0%, #e8f4f8 100%);
-            min-height: 100vh;
-            color: #333;
-        }
+{% block title %}Поиск пользователей - Dog&Home{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock %}
 
-        .header {
-            text-align: center;
-            padding: 30px 0;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #ff9a3c, #ff6b6b, #4d96ff);
-        }
-
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .header h1::before {
-            content: "🔍";
-            font-size: 2rem;
-        }
-
-        .dog-paw {
-            position: absolute;
-            font-size: 1.5rem;
-            opacity: 0.3;
-        }
-
-        .search-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
-            border-radius: 50px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .input-group:focus-within {
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 18px 25px;
-            border: none;
-            font-size: 1.1rem;
-            background: #f8f9fa;
-            outline: none;
-        }
-
-        .search-input::placeholder {
-            color: #95a5a6;
-        }
-
-        .search-btn {
-            padding: 0 35px;
-            background: linear-gradient(135deg, #4d96ff 0%, #6bc5ff 100%);
-            color: white;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-btn:hover {
-            background: linear-gradient(135deg, #357ae8 0%, #4d96ff 100%);
-        }
-
-        .search-stats {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-            border-left: 5px solid #4d96ff;
-        }
-
-        .search-stats p {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-
-        .search-stats ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-stats li {
-            background: #e8f4f8;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-
-        .users-results {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .users-results h2 {
-            color: #2c3e50;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e8f4f8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .users-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-        }
-
-        .user-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 25px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            border-color: #4d96ff;
-            background: white;
-        }
-
-        .user-avatar {
-            flex-shrink: 0;
-        }
-
-        .user-avatar img,
-        .avatar-placeholder {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #4d96ff;
-        }
-
-        .avatar-placeholder {
-            background: linear-gradient(135deg, #4d96ff 0%, #6bc5ff 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-info h4 {
-            color: #2c3e50;
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-        }
-
-        .user-info p {
-            color: #7f8c8d;
-            margin-bottom: 5px;
-            font-size: 0.95rem;
-        }
-
-        .user-info small {
-            color: #95a5a6;
-        }
-
-        .profile-link {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #4d96ff 0%, #6bc5ff 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .profile-link:hover {
-            background: white;
-            color: #4d96ff;
-            border-color: #4d96ff;
-            transform: scale(1.05);
-        }
-
-        .no-results {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin: 30px 0;
-        }
-
-        .no-results p:first-child {
-            font-size: 1.4rem;
-            color: #e74c3c;
-            margin-bottom: 20px;
-        }
-
-        .no-results ul {
-            list-style: none;
-            max-width: 400px;
-            margin: 20px auto;
-            text-align: left;
-        }
-
-        .no-results li {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .no-results li::before {
-            content: "🐾";
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #95a5a6;
-            font-size: 1.2rem;
-        }
-
-        .empty-state::before {
-            content: "🔍";
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .dog-decoration {
-            text-align: center;
-            margin-top: 40px;
-            opacity: 0.1;
-            font-size: 4rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .input-group {
-                flex-direction: column;
-                border-radius: 15px;
-            }
-
-            .search-input {
-                padding: 15px;
-                border-radius: 15px 15px 0 0;
-            }
-
-            .search-btn {
-                padding: 15px;
-                border-radius: 0 0 15px 15px;
-                justify-content: center;
-            }
-
-            .users-list {
-                grid-template-columns: 1fr;
-            }
-
-            .user-card {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-
-            .search-stats ul {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #4d96ff;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #357ae8;
-            gap: 12px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Результаты поиска</h1>
-            <p>Найдите любителей собак на нашей платформе</p>
-        </div>
-
-        <form method="get" action="{% url 'search_users' %}" class="search-box">
-            <div class="input-group">
-                <input type="text"
-                       name="q"
-                       value="{{ query }}"
-                       placeholder="Поиск по имени пользователя, email или имени..."
-                       class="search-input">
-                <button type="submit" class="search-btn">
-                    <span>🔍</span>
-                    <span>Найти</span>
-                </button>
-            </div>
-        </form>
-
-        {% if query %}
-            <div class="search-stats">
-                <p>Результаты поиска по запросу: <strong>"{{ query }}"</strong></p>
-                <ul>
-                    <li>👤 Найдено пользователей: {{ users_count }}</li>
-                </ul>
-            </div>
-
-            {% if users %}
-                <section class="users-results">
-                    <h2>🐶 Любители собак ({{ users_count }})</h2>
-                    <div class="users-list">
-                        {% for user in users %}
-                            <div class="user-card">
-                                <div class="user-avatar">
-                                    {% if user.profile.avatar %}
-                                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
-                                    {% else %}
-                                        <div class="avatar-placeholder">{{ user.username|first|upper }}</div>
-                                    {% endif %}
-                                </div>
-                                <div class="user-info">
-                                    <h4>
-                                        {% if user.get_full_name %}
-                                            {{ user.get_full_name }}
-                                        {% else %}
-                                            {{ user.username }}
-                                        {% endif %}
-                                    </h4>
-                                    <p>@{{ user.username }}</p>
-                                    {% if user.email %}
-                                        <p><small>{{ user.email }}</small></p>
-                                    {% endif %}
-                                    <a href="{% url 'profile_card' %}?user_id={{ user.id }}" class="profile-link">
-                                        Посмотреть профиль
-                                    </a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% else %}
-                <div class="no-results">
-                    <p>😔 По запросу "{{ query }}" ничего не найдено</p>
-                    <p>Возможно, стоит:</p>
-                    <ul>
-                        <li>Использовать другие ключевые слова</li>
-                        <li>Проверить правильность написания</li>
-                        <li>Поискать только по имени пользователя</li>
-                        <li>Использовать часть email адреса</li>
-                    </ul>
-                    <div class="dog-decoration">🐕‍🦺</div>
-                </div>
-            {% endif %}
-        {% else %}
-            <div class="empty-state">
-                Введите поисковый запрос в поле выше, чтобы найти других любителей собак
-                <div class="dog-decoration">🐶🐕🐩</div>
-            </div>
-        {% endif %}
-
-        <a href="/" class="back-link">
-            ← Вернуться на главную
-        </a>
+{% block content %}
+<div class="search-container">
+    <!-- Заголовок -->
+    <div class="search-header">
+        <h1>
+            <i class="fas fa-search"></i>
+            Результаты поиска
+        </h1>
+        <p>Найдите любителей собак на нашей платформе</p>
     </div>
 
-    <script>
+    <!-- Форма поиска -->
+    <form method="get" action="{% url 'search_users' %}" class="search-box">
+        <div class="input-group">
+            <input type="text"
+                   name="q"
+                   value="{{ query|default:'' }}"
+                   placeholder="Поиск по имени пользователя, email или имени..."
+                   class="search-input"
+                   autocomplete="off">
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+                <span>Найти</span>
+            </button>
+        </div>
+    </form>
 
-        document.addEventListener('DOMContentLoaded', function() {
+    {% if query %}
+        <!-- Статистика поиска -->
+        <div class="search-stats">
+            <p>
+                <i class="fas fa-chart-line"></i>
+                Результаты поиска по запросу: <strong>"{{ query }}"</strong>
+            </p>
+            <ul>
+                <li>
+                    <i class="fas fa-users"></i>
+                    Найдено пользователей: {{ users_count }}
+                </li>
+            </ul>
+        </div>
 
-            const userCards = document.querySelectorAll('.user-card');
-            userCards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
+        {% if users %}
+            <!-- Результаты -->
+            <section class="users-results">
+                <h2>
+                    <i class="fas fa-dog"></i>
+                    Любители собак ({{ users_count }})
+                </h2>
+                <div class="users-list">
+                    {% for user in users %}
+                        <div class="user-card" style="animation-delay: {{ forloop.counter0|add:"1"|stringformat:"s" }}00ms">
+                            <div class="user-avatar">
+                                {% if user.profile.avatar %}
+                                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <h4>
+                                    <i class="fas fa-user-check"></i>
+                                    {{ user.get_full_name|default:user.username }}
+                                </h4>
+                                <p class="user-username">
+                                    <i class="fas fa-at"></i>
+                                    {{ user.username }}
+                                </p>
+                                {% if user.email %}
+                                    <p class="user-email">
+                                        <i class="fas fa-envelope"></i>
+                                        {{ user.email }}
+                                    </p>
+                                {% endif %}
+                                <a href="{% url 'profile_card' %}?user_id={{ user.id }}" class="profile-link">
+                                    <i class="fas fa-eye"></i>
+                                    Посмотреть профиль
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            <!-- Нет результатов -->
+            <div class="no-results">
+                <div class="no-results-icon">
+                    <i class="fas fa-dog fa-4x" style="color: #bdc3c7;"></i>
+                </div>
+                <p>😔 По запросу "{{ query }}" ничего не найдено</p>
+                <p>Возможно, стоит попробовать:</p>
+                <ul>
+                    <li><i class="fas fa-lightbulb"></i> Использовать другие ключевые слова</li>
+                    <li><i class="fas fa-spell-check"></i> Проверить правильность написания</li>
+                    <li><i class="fas fa-user"></i> Поискать только по имени пользователя</li>
+                    <li><i class="fas fa-envelope"></i> Использовать часть email адреса</li>
+                </ul>
+                <div class="suggestion-search">
+                    <p><i class="fas fa-search"></i> Попробуйте поискать:</p>
+                    <span class="suggestion-example">лабрадор</span>
+                    <span class="suggestion-example">овчарка</span>
+                    <span class="suggestion-example">анна</span>
+                    <span class="suggestion-example">собака</span>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Пустое состояние -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>Начните поиск</h3>
+            <p>Введите поисковый запрос в поле выше, чтобы найти других любителей собак</p>
+        </div>
+    {% endif %}
 
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
+    <!-- Ссылка назад -->
+    <a href="javascript:history.back()" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Вернуться назад
+    </a>
+</div>
+{% endblock %}
 
-
-            const searchInput = document.querySelector('.search-input');
-            if (searchInput && !searchInput.value) {
-                setTimeout(() => searchInput.focus(), 300);
-            }
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Анимация карточек
+        const userCards = document.querySelectorAll('.user-card');
+        userCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
         });
-    </script>
-</body>
-</html>
+
+        // Фокус на поле поиска
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput && !searchInput.value) {
+            setTimeout(() => searchInput.focus(), 300);
+        }
+    });
+</script>
+{% endblock %}

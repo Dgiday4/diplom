@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактирование {{ dog.name }} - Dog&Home{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/edit_dog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <!-- Заголовок -->
+    <div class="edit-header">
+        <h1>
+            <i class="fas fa-edit"></i>
+            Редактирование
+        </h1>
+        <p>{{ dog.name }}</p>
+    </div>
+
+    <!-- Форма редактирования -->
+    <form method="post" enctype="multipart/form-data" class="edit-form">
+        {% csrf_token %}
+
+        <!-- Кличка -->
+        <div class="form-group">
+            <label for="name">
+                <i class="fas fa-dog"></i> Кличка *
+            </label>
+            <input type="text" name="name" id="name" value="{{ dog.name }}" class="form-control" required>
+        </div>
+
+        <!-- Порода и Возраст -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="breed">
+                    <i class="fas fa-paw"></i> Порода
+                </label>
+                <input type="text" name="breed" id="breed" value="{{ dog.breed }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="age">
+                    <i class="fas fa-birthday-cake"></i> Возраст (лет)
+                </label>
+                <input type="number" name="age" id="age" value="{{ dog.age }}" class="form-control">
+            </div>
+        </div>
+
+        <!-- Цвет и Вес -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="color">
+                    <i class="fas fa-palette"></i> Цвет шерсти
+                </label>
+                <input type="text" name="color" id="color" value="{{ dog.color }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="weight">
+                    <i class="fas fa-weight-hanging"></i> Вес (кг)
+                </label>
+                <input type="number" name="weight" id="weight" value="{{ dog.weight }}" class="form-control" step="0.1">
+            </div>
+        </div>
+
+        <!-- Рост -->
+        <div class="form-group">
+            <label for="height">
+                <i class="fas fa-ruler"></i> Рост (см)
+            </label>
+            <input type="number" name="height" id="height" value="{{ dog.height }}" class="form-control">
+        </div>
+
+        <!-- Описание -->
+        <div class="form-group">
+            <label for="description">
+                <i class="fas fa-align-left"></i> Описание
+            </label>
+            <textarea name="description" id="description" rows="5" class="form-control">{{ dog.description }}</textarea>
+        </div>
+
+        <!-- Текущее фото -->
+        {% if dog.image %}
+        <div class="form-group">
+            <label><i class="fas fa-image"></i> Текущее фото</label>
+            <div class="current-photo">
+                <img src="{{ dog.image.url }}" alt="{{ dog.name }}">
+                <p>Текущее фото {{ dog.name }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+       <!-- Загрузка нового фото -->
+<div class="form-group">
+    <label for="imageInput">
+        <i class="fas fa-camera"></i> Новое фото
+    </label>
+    <div class="file-input-container">
+        <label class="file-input-label" for="imageInput">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Нажмите, чтобы выбрать новое фото</span>
+        </label>
+        <input type="file" name="image" id="imageInput" accept="image/*" class="file-input-hidden">
+    </div>
+    <small style="color: #95a5a6;">Оставьте пустым, если не хотите менять фото</small>
+</div>
+
+        <!-- Кнопки -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+            <a href="{% url 'dog_detail' dog.id %}" class="btn btn-cancel">
+                <i class="fas fa-times"></i> Отмена
+            </a>
+        </div>
+    </form>
+
+    <!-- Опасная зона (удаление) -->
+    <div class="danger-zone">
+        <h3>
+            <i class="fas fa-exclamation-triangle"></i>
+            Опасная зона
+        </h3>
+        <p>Удаление собаки приведёт к безвозвратной потере всей информации о ней, включая фото и комментарии.</p>
+        <form method="post" action="{% url 'delete_dog' dog.id %}"
+              onsubmit="return confirm('Вы уверены, что хотите удалить собаку {{ dog.name }}? Это действие нельзя отменить.')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Удалить собаку
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Показываем имя выбранного файла
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const label = document.querySelector('.file-input-label span');
+            label.textContent = `Выбрано: ${file.name.substring(0, 30)}${file.name.length > 30 ? '...' : ''}`;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% load static %}
+{% load webpush_notifications %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% webpush_header %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dog&Home{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Подключение основного CSS файла -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Навигация -->
+
+    {% if user.is_authenticated %}
+    {% webpush_button with_class="btn-push" %}
+{% endif %}
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'main' %}" class="logo">
+                <div class="logo-icon">🐶</div>
+                <div class="logo-text">Dog&Home</div>
+            </a>
+
+            <div class="nav-links">
+                <!-- Ссылка на ленту -->
+                <a href="{% url 'news_feed' %}" class="nav-link">
+                    <i class="fas fa-newspaper"></i>
+                    Лента
+                </a>
+
+                <!-- Поиск -->
+                <form method="get" action="{% url 'search_users' %}" class="search-form">
+                    <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q|default:'' }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+
+                {% if user.is_authenticated %}
+                    <div class="user-info">
+                        <a href="{% url 'profile_card' %}" class="user-avatar">
+                            {{ user.first_name|default:user.username|first|upper }}
+                        </a>
+                        <div class="user-name">
+                            {% if user.first_name %}
+                                {{ user.first_name }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'friends_list' %}" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Друзья
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Выйти
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Войти
+                    </a>
+                    <a href="{% url 'registrathion' %}" class="nav-link">
+                        <i class="fas fa-user-plus"></i>
+                        Регистрация
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Флеш-сообщения -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+                <button type="button" class="close-alert" onclick="this.parentElement.remove();">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Основной контент -->
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <p>© 2025 Dog&Home. Все права защищены. Сделано с ❤️ для собак и их хозяев.</p>
+    </footer>
+
+    <script>
+        // Автоматическое закрытие сообщений через 5 секунд
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 300);
+            });
+        }, 5000);
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

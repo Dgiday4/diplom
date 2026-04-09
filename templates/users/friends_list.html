@@ -1,34 +1,101 @@
+<!-- templates/users/friends_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if page_title == 'Мои друзья' %}
+        Мои друзья - Dog&Home
+    else %}
+        {{ page_title }} - Dog&Home
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/friends.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="friends-container">
-    <h1>{{ page_title }}</h1>
-    
-    <div class="friends-stats">
-        <p>Всего друзей: <strong>{{ friends_count }}</strong></p>
+    <!-- Заголовок -->
+    <div class="friends-header">
+        <h1>
+            <i class="fas fa-users"></i>
+            {{ page_title }}
+        </h1>
+        <p>Здесь отображаются все ваши друзья</p>
     </div>
-    
+
+    <!-- Статистика -->
+    <div class="friends-stats">
+        <div class="stats-info">
+            <i class="fas fa-paw"></i>
+            <p>Всего друзей: <strong>{{ friends_count }}</strong></p>
+        </div>
+        <div class="friends-count-badge">
+            <i class="fas fa-user-friends"></i>
+            {{ friends_count }} {{ friends_count|pluralize:"друг,друга,друзей" }}
+        </div>
+    </div>
+
+    <!-- Список друзей -->
     {% if friends %}
         <div class="friends-list">
             {% for friend in friends %}
-                <div class="friend-item">
+                <div class="friend-item" style="--index: {{ forloop.counter0 }}">
                     <a href="{% url 'profile_card' %}?user_id={{ friend.id }}" class="friend-link">
-                        <img src="{{ friend.profile.avatar.url|default:'https://via.placeholder.com/80' }}" 
-                             alt="{{ friend.username }}" class="friend-avatar">
+                        <!-- Аватар -->
+                        {% if friend.profile.avatar %}
+                            <img src="{{ friend.profile.avatar.url }}"
+                                 alt="{{ friend.username }}"
+                                 class="friend-avatar">
+                        {% else %}
+                            <div class="friend-avatar-placeholder">
+                                {{ friend.username|first|upper }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Информация -->
                         <div class="friend-info">
-                            <h3>{{ friend.get_full_name|default:friend.username }}</h3>
-                            <p>@{{ friend.username }}</p>
-                            {% if friend.profile.city %}
-                                <p class="city">📍 {{ friend.profile.city }}</p>
-                            {% endif %}
+                            <h3>
+                                <i class="fas fa-dog"></i>
+                                {{ friend.get_full_name|default:friend.username }}
+                            </h3>
+                            <p class="friend-username">
+                                <i class="fas fa-at"></i>
+                                {{ friend.username }}
+                            </p>
+
+                            <div class="friend-details">
+                                {% if friend.email %}
+                                    <span class="friend-detail">
+                                        <i class="fas fa-envelope"></i>
+                                        {{ friend.email }}
+                                    </span>
+                                {% endif %}
+
+                                {% if friend.profile.city %}
+                                    <span class="friend-detail">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ friend.profile.city }}
+                                    </span>
+                                {% endif %}
+
+                                <span class="friend-detail">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    С нами с {{ friend.date_joined|date:"d.m.Y" }}
+                                </span>
+                            </div>
                         </div>
                     </a>
-                    
+
                     <!-- Кнопка удаления (только для своих друзей) -->
                     {% if page_title == 'Мои друзья' %}
-                        <form method="post" action="{% url 'remove_friend' friend.id %}" 
-                              class="remove-form">
+                        <form method="post" action="{% url 'remove_friend' friend.id %}"
+                              class="remove-form"
+                              onsubmit="return confirm('Вы уверены, что хотите удалить {{ friend.get_full_name|default:friend.username }} из друзей?')">
                             {% csrf_token %}
-                            <button type="submit" class="btn-remove" 
-                                    onclick="return confirm('Удалить из друзей?')">
+                            <button type="submit" class="btn-remove">
+                                <i class="fas fa-user-minus"></i>
                                 Удалить
                             </button>
                         </form>
@@ -37,95 +104,28 @@
             {% endfor %}
         </div>
     {% else %}
+        <!-- Пустое состояние -->
         <div class="no-friends">
-            <p>😔 Нет друзей</p>
-            <p>Найдите друзей через поиск пользователей!</p>
+            <div class="no-friends-icon">🐕</div>
+            <p>😔 У вас пока нет друзей</p>
+            <p>Найдите интересных людей и добавьте их в друзья!</p>
+            <a href="{% url 'search_users' %}" class="find-friends-btn">
+                <i class="fas fa-search"></i>
+                Найти друзей
+            </a>
         </div>
     {% endif %}
 </div>
+{% endblock %}
 
-<style>
-.friends-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.friends-stats {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.friend-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    transition: background 0.3s;
-}
-
-.friend-item:hover {
-    background: #f8f9fa;
-}
-
-.friend-link {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-    flex: 1;
-}
-
-.friend-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-    border: 2px solid #4d96ff;
-}
-
-.friend-info h3 {
-    margin: 0 0 5px 0;
-}
-
-.friend-info p {
-    margin: 0;
-    color: #666;
-    font-size: 14px;
-}
-
-.city {
-    color: #888;
-    font-size: 13px;
-}
-
-.btn-remove {
-    padding: 8px 16px;
-    background: #ff6b6b;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn-remove:hover {
-    background: #ff5252;
-}
-
-.no-friends {
-    text-align: center;
-    padding: 50px 20px;
-    color: #666;
-}
-
-.no-friends p:first-child {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-</style>
+{% block extra_js %}
+<script>
+// Анимация появления карточек
+document.addEventListener('DOMContentLoaded', function() {
+    const items = document.querySelectorAll('.friend-item');
+    items.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.05}s`;
+    });
+});
+</script>
 {% endblock %}

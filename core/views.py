@@ -71,15 +71,50 @@ def add_dog_comment(request, dog_id):
 
     return redirect('dog_detail', dog_id=dog_id)
 
-def delete_dog_comment(request, dog_id):
-    #Удалить комментарий
-    comment = get_object_or_404(DogComment, id=dog_id)
 
+def delete_dog_comment(request, comment_id):
+    comment = get_object_or_404(DogComment, id=comment_id)
     if request.method == 'POST':
-        if request.user == comment.author or request.user == comment.dog.profile or request.user.is_staff:
+        # Проверяем права (если владелец через profile)
+        is_owner = (request.user == comment.dog.profile.user) if hasattr(comment.dog, 'profile') else False
+        if request.user == comment.author or is_owner or request.user.is_staff:
             comment.delete()
             messages.success(request, 'Комментарий удален')
         else:
             messages.error(request, 'У вас нет прав на удаление этого комментария')
 
-    return redirect('dog_detail', dog_id=dog_id)
+    return redirect('dog_detail', dog_id=comment.dog.id)
+
+
+def edit_dog(request, dog_id):
+    # 1. Находим собаку
+    dog = get_object_or_404(Dog, id=dog_id)
+
+    # 2. Проверяем, что это хозяин
+    if request.user != dog.profile.user:
+        messages.error(request, 'Это не ваша собака!')
+        return redirect('dog_detail', dog_id=dog.id)
+
+    # 3. Обрабатываем отправку формы
+    if request.method == 'POST':
+        # Берём новые данные из формы
+        dog.name = request.POST.get('name', dog.name)
+        dog.breed = request.POST.get('breed', dog.breed)
+        dog.age = request.POST.get('age', dog.age)
+        dog.description = request.POST.get('description', dog.description)
+
+        # Если загрузили новое фото
+        if request.FILES.get('image'):
+            dog.image = request.FILES['image']
+
+        # Сохраняем
+        dog.save()
+
+        # Сообщение об успехе
+        messages.success(request, f'Собака {dog.name} обновлена!')
+
+        # Возвращаемся на страницу собаки
+        return redirect('dog_detail', dog_id=dog.id)
+
+    # 4. Показываем форму с текущими данными
+    return render(request, 'edit_dog.html', {'dog': dog})

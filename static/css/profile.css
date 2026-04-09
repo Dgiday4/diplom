@@ -1,0 +1,436 @@
+/* static/css/profile.css */
+
+/* Карточка профиля - увеличим ширину */
+.profile-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Шапка профиля - горизонтальное расположение */
+.profile-header {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    flex-wrap: wrap;
+}
+
+/* Левая колонка с аватаром */
+.profile-avatar-section {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.profile-avatar-container {
+    margin-bottom: 15px;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    font-weight: bold;
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+}
+
+/* Правая колонка с информацией */
+.profile-info-section {
+    flex: 1;
+}
+
+.username {
+    font-size: 32px;
+    color: var(--secondary-color);
+    margin: 0 0 5px 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.email {
+    color: #7f8c8d;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Статистика друзей */
+.friend-stats {
+    display: flex;
+    gap: 30px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.friend-stat {
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.friend-stat:hover {
+    transform: translateY(-3px);
+}
+
+.friend-stat strong {
+    display: block;
+    font-size: 28px;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.friend-stat span {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Кнопки дружбы */
+.friend-button-container {
+    margin: 20px 0;
+}
+
+.btn-friend {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.btn-add-friend {
+    background: linear-gradient(135deg, var(--success-color), #27ae60);
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.btn-add-friend:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+}
+
+.btn-remove-friend {
+    background: linear-gradient(135deg, var(--accent-color), #c0392b);
+    color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.btn-remove-friend:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+/* Информация о пользователе - горизонтальная сетка */
+.profile-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 130px;
+    font-size: 0.95rem;
+}
+
+.info-value {
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+/* Секция собак - увеличенные карточки */
+.dogs-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.dogs-section h3 {
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.dog-card {
+    background: #f8f9fa;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.dog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+    background: white;
+}
+
+/* Фото собаки - нормальная высота */
+.dog-photo {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.dog-card:hover .dog-photo {
+    transform: scale(1.05);
+}
+
+.dog-photo-placeholder {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+}
+
+.dog-info {
+    padding: 20px;
+}
+
+.dog-info h4 {
+    color: var(--secondary-color);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.dog-info p {
+    color: #666;
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+.dog-card-actions {
+    padding: 0 20px 20px 20px;
+}
+
+.btn-view-dog {
+    display: block;
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
+    color: white;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.btn-view-dog:hover {
+    background: linear-gradient(135deg, #2980b9, var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* Ссылки действий */
+.action-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.action-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-links a:hover {
+    background: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+/* Кнопка редактирования профиля */
+.btn-edit-profile {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--warning-color), #e67e22);
+    color: white;
+    text-decoration: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.btn-edit-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+}
+
+/* Auth info */
+.auth-info {
+    background: #f0f8ff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.auth-info p {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    text-decoration: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+/* No dogs state */
+.no-dogs {
+    text-align: center;
+    padding: 60px 40px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    color: #666;
+}
+
+.no-dogs p:first-child {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .info-label {
+        min-width: auto;
+    }
+
+    .dogs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dog-photo {
+        height: 200px;
+    }
+
+    .auth-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .friend-stats {
+        justify-content: center;
+    }
+
+    .action-links {
+        flex-direction: column;
+    }
+
+    .action-links a {
+        justify-content: center;
+    }
+}
